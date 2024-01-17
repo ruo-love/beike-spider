@@ -2,48 +2,51 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
 # Import necessary modules
-from openpyxl import Workbook
-
 from datetime import datetime
+
+from openpyxl import Workbook
+from pymongo import MongoClient
 
 
 class BeikePipeline:
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         settings = crawler.settings
-        FILE_NAME = settings.get('FILE_NAME')
-        return cls(FILE_NAME, *args, **kwargs)
 
-    def __init__(self, FILE_NAME):
-        self.FILE_NAME = FILE_NAME
+        return cls(*args, **kwargs)
+
+    def __init__(self):
+        self.fileName = ''
+        self.client = MongoClient('127.0.0.1', 27017)
+        self.beike_db = self.client['beike']
         self.wb = Workbook()
         self.ws = self.wb.active
-        self.ws.title = self.FILE_NAME
+        self.ws.title = '贝壳网'
         self.ws.append(['名称', '装修朝向', '楼层', '地址', '成交历史', '单价', '时间', '成交价格', '其他信息'])
 
     def process_item(self, item, spider):
-        title = item.get('title', '')
-        decorate = item.get('decorate', '')
-        floor = item.get('floor', '')
-        address = item.get('address', '')
-        history = item.get('history', '')
-        price = item.get('price', '')
-        time = item.get('time', '')
-        transaction_price = item.get('transaction_price', '')
-        msg = item.get('msg', '')
-        # Append the data as a list
-        self.ws.append([title, decorate, floor, address, history, price, time, transaction_price, msg])
+        try:
+            # 使用字典推导式简化数据提取
+            item_data = {key: item.get(key, '') for key in
+                         ['title', 'decorate', 'floor', 'address', 'history', 'price', 'time', 'transaction_price',
+                          'msg']}
+            # Excel 插入
+            self.ws.append(list(item_data.values()))
+            self.fileName = item['fileName']
+            # MongoDB 插入
+            # col = self.beike_db['chengjiao']
+            # col.insert_one(item_data)
+        except Exception as e:
+            spider.logger.error(f"Error processing item: {e}")
 
         return item
 
     def close_spider(self, spider):
         now = datetime.now()
-        formatted_now = now.strftime("%Y-%m-%d__%H-%M-%S")
+        self.client.close()
+        formatted_now = now.strftime("%Y年%m月%d日 %H时%M分%S秒 ")
         # Save and close the workbook
-        self.wb.save(formatted_now+self.ws.title+'.xlsx')
+        self.wb.save(formatted_now + self.ws.title + self.fileName + '成交数据.xlsx')
         self.wb.close()

@@ -1,8 +1,7 @@
 import scrapy
 
 from beike.items import BeikeItem
-
-
+## scrapy crawl beike -a address="普陀" -a max=20
 class QuotesSpider(scrapy.Spider):
     name = "beike"
 
@@ -24,11 +23,11 @@ class QuotesSpider(scrapy.Spider):
         li_els = response.css(
             '#beike > div.dealListPage > div.content > div.leftContent > div:nth-child(4) > ul.listContent > li')
         for El in li_els:
-            item = BeikeItem()
             info_el = El.css('div.info')
             detail_url = El.xpath('.//a[@class="img CLICKDATA maidian-detail"]/@href').get()
             # 创建 BeikeItem 实例>
             item = BeikeItem()
+            item['fileName'] = f" [{self.address}] "
             title = info_el.css('div.title > a::text').get().strip()
             item['title'] = title
             decorate = info_el.xpath('normalize-space(.//div[@class="houseInfo"])').get()

@@ -8,7 +8,6 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = "beike"
-FILE_NAME = "普陀"
 SPIDER_MODULES = ["beike.spiders"]
 NEWSPIDER_MODULE = "beike.spiders"
 
