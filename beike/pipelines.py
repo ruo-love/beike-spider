@@ -24,14 +24,13 @@ class BeikePipeline:
         self.wb = Workbook()
         self.ws = self.wb.active
         self.ws.title = '贝壳网'
-        self.ws.append(['名称', '装修朝向', '楼层', '地址', '成交历史', '单价', '时间', '成交价格', '其他信息'])
+        self.ws.append(['名称', '装修朝向', '楼层', '地址', '成交历史', '单价', '时间', '区域', '板块', '户型'])
 
     def process_item(self, item, spider):
         try:
             # 使用字典推导式简化数据提取
             item_data = {key: item.get(key, '') for key in
-                         ['title', 'decorate', 'floor', 'address', 'history', 'price', 'time', 'transaction_price',
-                          'msg']}
+                         ['title', 'decorate', 'floor', 'address', 'history', 'price', 'time', 'area', 'plate', 'v']}
             # Excel 插入
             self.ws.append(list(item_data.values()))
             self.fileName = item['fileName']

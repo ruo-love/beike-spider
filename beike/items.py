@@ -16,6 +16,9 @@ class BeikeItem(scrapy.Item):
     history = scrapy.Field()  # '成交历史'
     price = scrapy.Field()  # '单价'
     time = scrapy.Field()  # '时间'
-    transaction_price = scrapy.Field()  # '成交价格’
-    msg = scrapy.Field()  # 'msg’
+    area = scrapy.Field()  # 区域
+    plate = scrapy.Field()  # 板块
+    v = scrapy.Field()  # '户型'
+    # transaction_price = scrapy.Field()  # '成交价格’
+    # msg = scrapy.Field()  # 'msg’
     pass
