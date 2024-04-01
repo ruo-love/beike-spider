@@ -19,6 +19,7 @@ class BeikeItem(scrapy.Item):
     area = scrapy.Field()  # 区域
     plate = scrapy.Field()  # 板块
     v = scrapy.Field()  # '户型'
+    total_price = scrapy.Field()  # '总价'
     # transaction_price = scrapy.Field()  # '成交价格’
     # msg = scrapy.Field()  # 'msg’
     pass
