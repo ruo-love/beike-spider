@@ -6,8 +6,13 @@ import sys
 from beike.items import BeikeItem
 
 
-## scrapy crawl beike
+## scrapy crawl beike -a area=pudong -a area_label=浦东 -a page_size=100
 class QuotesSpider(scrapy.Spider):
+    def __init__(self, area='pudong', area_label='浦东', page_size=100, *args, **kwargs):
+        super(QuotesSpider, self).__init__(*args, **kwargs)
+        self.area = area
+        self.area_label = area_label
+        self.page_size = page_size
     name = "beike"
     allowed_domains = ['bj.ke.com', 'sh.ke.com']
     # start_urls = ['https://sh.ke.com/chengjiao/pg{}']
@@ -31,7 +36,7 @@ class QuotesSpider(scrapy.Spider):
     def start_requests(self):
         # yield scrapy.Request(url=self.start_url, callback=self.parse_area)
         yield scrapy.Request(url='https://sh.ke.com/chengjiao/pudong/', callback=self.parse_plate,
-                             meta={'area': 'pudong', 'area_label': '浦东'})
+                             meta={'area': self.area, 'area_label': self.area_label})
 
     # 获取区域
     def parse_area(self, response, **kwargs):
@@ -78,7 +83,7 @@ class QuotesSpider(scrapy.Spider):
         modified_url = response.meta['modified_url']
         total_el = response.css('div.resultDes > div.total > span').get()
         total = int(re.search(r'\d+', total_el).group())
-        page_size = min(math.ceil(total / 30), 100)
+        page_size = min(math.ceil(total / 30), self.page_size)
         for i in tqdm(range(1, page_size + 1), desc='分页', unit='page'):
             url = modified_url.format(i)
             yield scrapy.Request(url=url, callback=self.parse, meta={'v': v, 'c': c, 'area_label': area_label,
