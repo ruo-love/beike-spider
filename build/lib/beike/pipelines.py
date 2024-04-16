@@ -45,7 +45,10 @@ class BeikePipeline:
     def close_spider(self, spider):
         now = datetime.now()
         self.client.close()
+        file_name = spider.file_name
+        if file_name:
+            self.fileName = file_name
         formatted_now = now.strftime("%Y年%m月%d日 %H时%M分%S秒 ")
         # Save and close the workbook
-        self.wb.save(formatted_now + self.ws.title + self.fileName + '成交数据.xlsx')
+        self.wb.save(formatted_now + self.ws.title + self.fileName +spider.area_label + '成交数据.xlsx')
         self.wb.close()

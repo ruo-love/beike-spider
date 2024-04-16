@@ -6,13 +6,15 @@ import sys
 from beike.items import BeikeItem
 
 
-## scrapy crawl beike -a area=pudong -a area_label=浦东 -a page_size=100
+## scrapy crawl beike -a area=pudong -a area_label=浦东 -a page_size=100 -a cookie=xxx -a file_name=xxx
 class QuotesSpider(scrapy.Spider):
-    def __init__(self, area='pudong', area_label='浦东', page_size=100, *args, **kwargs):
+    def __init__(self, area='pudong', area_label='浦东', page_size=100, cookie="", file_name="", *args, **kwargs):
         super(QuotesSpider, self).__init__(*args, **kwargs)
         self.area = area
         self.area_label = area_label
         self.page_size = page_size
+        self.cookie = cookie
+        self.file_name = file_name
     name = "beike"
     allowed_domains = ['bj.ke.com', 'sh.ke.com']
     # start_urls = ['https://sh.ke.com/chengjiao/pg{}']
